@@ -1,0 +1,58 @@
+import cv2
+import os
+import datetime
+
+def capture_photo(save_directory):
+    if not os.path.exists(save_directory):
+        os.makedirs(save_directory)
+
+    # urls = [ "http://192.0.0.40:8080/video" ]
+    # swift = urls  
+
+    webcam = [0]
+    swift = webcam
+
+    for camera in swift:
+        print(f"Trying to connect to: {camera}")
+        cap = cv2.VideoCapture(camera)
+
+        if cap.isOpened():
+            print(f"Successfully connected to: {camera}")
+            break
+        else:
+            print(f"Failed to connect to: {camera}")
+
+    if not cap.isOpened():
+        print("Error: Could not open any video stream.")
+        return
+
+    print("Press 'c' to capture a photo, or 'Enter' to exit.")
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            print("Error: Failed to capture frame.")
+            break
+        
+        cv2.imshow("Video Feed", frame)
+        
+        key = cv2.waitKey(1)
+        if key == ord('c'):
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"captured_photo_{timestamp}.jpg"
+            save_path = os.path.join(save_directory, filename)
+            if cv2.imwrite(save_path, frame):
+                print(f"Photo captured successfully! Saved as {filename}")
+            else:
+                print("Error: Failed to save the photo.")
+        
+        elif key == 13:  
+
+            print("Exiting...")
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    save_directory = "D:\\machine larning\\CRT\\image"
+    capture_photo(save_directory)
